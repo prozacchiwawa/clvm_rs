@@ -6,18 +6,18 @@ mod dialect;
 mod err_utils;
 pub mod f_table;
 mod gen;
-mod int_to_bytes;
+pub mod int_to_bytes;
 pub mod more_ops;
 pub mod node;
-mod number;
-mod op_utils;
+pub mod number;
+pub mod op_utils;
 pub mod operator_handler;
 #[cfg(not(any(test, target_family = "wasm")))]
-mod py;
+pub mod py;
 pub mod reduction;
 pub mod run_program;
-mod serialize;
-mod sha2;
+pub mod serialize;
+pub mod sha2;
 
 #[cfg(test)]
 mod tests;
