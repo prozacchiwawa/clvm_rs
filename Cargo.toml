@@ -28,7 +28,7 @@ sha2 = "=0.9.5"
 openssl = { version = "0.10.35", features = ["vendored"], optional = true }
 
 # we just want the GMP bindings, so we disable default features
-gmp-mpfr-sys = { version = "=1.4", default-features = false }
+gmp-mpfr-sys = { git = "https://github.com/prozacchiwawa/gmp-mpfr-sys", rev = "9f313e53e3176dbe85cbf71f85113e3965201bb6", default-features = false }
 
 [target.'cfg(target_family="wasm")'.dependencies]
 wasm-bindgen = "=0.2.75"

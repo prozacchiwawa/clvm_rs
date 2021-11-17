@@ -12,6 +12,18 @@ use std::ops::{
 
 use std::cmp::Ordering;
 
+#[cfg(target_family = "wasm")]
+type NativeWord = u32;
+
+#[cfg(target_family = "wasm")]
+type NativeSigned = i32;
+
+#[cfg(not(target_family = "wasm"))]
+type NativeWord = u64;
+
+#[cfg(not(target_family = "wasm"))]
+type NativeSigned = i64;
+
 #[allow(clippy::enum_variant_names)]
 #[derive(PartialEq)]
 pub enum Sign {
@@ -214,7 +226,7 @@ impl AddAssign<&Number> for Number {
 impl AddAssign<u64> for Number {
     fn add_assign(&mut self, other: u64) {
         unsafe {
-            gmp::mpz_add_ui(&mut self.v, &self.v, other);
+            gmp::mpz_add_ui(&mut self.v, &self.v, other as NativeWord);
         }
     }
 }
@@ -246,7 +258,7 @@ impl Shl<i32> for Number {
     fn shl(mut self, n: i32) -> Self {
         assert!(n >= 0);
         unsafe {
-            gmp::mpz_mul_2exp(&mut self.v, &self.v, n as u64);
+            gmp::mpz_mul_2exp(&mut self.v, &self.v, n as NativeWord);
         }
         self
     }
@@ -257,7 +269,7 @@ impl Shr<i32> for Number {
     fn shr(mut self, n: i32) -> Self {
         assert!(n >= 0);
         unsafe {
-            gmp::mpz_fdiv_q_2exp(&mut self.v, &self.v, n as u64);
+            gmp::mpz_fdiv_q_2exp(&mut self.v, &self.v, n as NativeWord);
         }
         self
     }
@@ -269,7 +281,7 @@ impl From<i64> for Number {
     fn from(other: i64) -> Self {
         let mut v = MaybeUninit::<gmp::mpz_t>::uninit();
         unsafe {
-            gmp::mpz_init_set_si(v.as_mut_ptr(), other);
+            gmp::mpz_init_set_si(v.as_mut_ptr(), other as NativeSigned);
         }
         Number {
             v: unsafe { v.assume_init() },
@@ -281,7 +293,7 @@ impl From<i32> for Number {
     fn from(other: i32) -> Self {
         let mut v = MaybeUninit::<gmp::mpz_t>::uninit();
         unsafe {
-            gmp::mpz_init_set_si(v.as_mut_ptr(), other as i64);
+            gmp::mpz_init_set_si(v.as_mut_ptr(), other as NativeSigned);
         }
         Number {
             v: unsafe { v.assume_init() },
@@ -293,7 +305,7 @@ impl From<u64> for Number {
     fn from(other: u64) -> Self {
         let mut v = MaybeUninit::<gmp::mpz_t>::uninit();
         unsafe {
-            gmp::mpz_init_set_ui(v.as_mut_ptr(), other);
+            gmp::mpz_init_set_ui(v.as_mut_ptr(), other as NativeWord);
         }
         Number {
             v: unsafe { v.assume_init() },
@@ -305,7 +317,7 @@ impl From<usize> for Number {
     fn from(other: usize) -> Self {
         let mut v = MaybeUninit::<gmp::mpz_t>::uninit();
         unsafe {
-            gmp::mpz_init_set_ui(v.as_mut_ptr(), other as u64);
+            gmp::mpz_init_set_ui(v.as_mut_ptr(), other as NativeWord);
         }
         Number {
             v: unsafe { v.assume_init() },
@@ -318,7 +330,7 @@ impl From<Number> for u64 {
         unsafe {
             assert!(gmp::mpz_sizeinbase(&n.v, 2) <= 64);
             assert!(gmp::mpz_sgn(&n.v) >= 0);
-            gmp::mpz_get_ui(&n.v)
+            gmp::mpz_get_ui(&n.v) as u64
         }
     }
 }
@@ -327,7 +339,7 @@ impl From<Number> for i64 {
     fn from(n: Number) -> i64 {
         unsafe {
             assert!(gmp::mpz_sizeinbase(&n.v, 2) <= 64);
-            gmp::mpz_get_si(&n.v)
+            gmp::mpz_get_si(&n.v) as i64
         }
     }
 }
@@ -379,19 +391,21 @@ impl PartialEq<Number> for Number {
 
 impl PartialEq<u64> for Number {
     fn eq(&self, other: &u64) -> bool {
-        unsafe { gmp::mpz_cmp_ui(&self.v, *other) == 0 }
+        let mut nativeCopy : NativeWord = *other as NativeWord;
+        unsafe { gmp::mpz_cmp_ui(&self.v, nativeCopy) == 0 }
     }
 }
 
 impl PartialEq<i64> for Number {
     fn eq(&self, other: &i64) -> bool {
-        unsafe { gmp::mpz_cmp_si(&self.v, *other) == 0 }
+        let mut nativeCopy : NativeSigned = *other as NativeSigned;
+        unsafe { gmp::mpz_cmp_si(&self.v, nativeCopy) == 0 }
     }
 }
 
 impl PartialEq<i32> for Number {
     fn eq(&self, other: &i32) -> bool {
-        unsafe { gmp::mpz_cmp_si(&self.v, *other as i64) == 0 }
+        unsafe { gmp::mpz_cmp_si(&self.v, *other as NativeSigned) == 0 }
     }
 }
 
@@ -411,7 +425,7 @@ impl PartialOrd<Number> for Number {
 
 impl PartialOrd<u64> for Number {
     fn partial_cmp(&self, other: &u64) -> Option<Ordering> {
-        ord_helper(unsafe { gmp::mpz_cmp_ui(&self.v, *other) })
+        ord_helper(unsafe { gmp::mpz_cmp_ui(&self.v, *other as NativeWord) })
     }
 }
 
