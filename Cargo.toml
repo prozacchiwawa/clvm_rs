@@ -1,38 +1,5 @@
-[package]
-name = "clvm_rs"
-version = "0.1.16"
-authors = ["Richard Kiss <him@richardkiss.com>"]
-edition = "2018"
-license = "Apache-2.0"
-description = "Implementation of `clvm` for Chia Network's cryptocurrency"
-homepage = "https://github.com/Chia-Network/clvm_rs/"
-repository = "https://github.com/Chia-Network/clvm_rs/"
-readme = "README.md"
-
-[lib]
-name = "clvm_rs"
-crate-type = ["cdylib", "rlib"]
-
-[profile.release]
-lto = true
-
-[features]
-extension-module = ["pyo3/extension-module"]
-default = ["extension-module"]
-
-[dependencies]
-hex = "=0.4.3"
-lazy_static = "=1.4.0"
-num-bigint = "=0.4.0"
-num-traits = "=0.2.14"
-num-integer = "=0.1.44"
-bls12_381 = "=0.5.0"
-sha2 = "=0.9.5"
-openssl = { version = "0.10.35", features = ["vendored"], optional = true }
-
-[target.'cfg(target_family="wasm")'.dependencies]
-wasm-bindgen = "=0.2.75"
-wasm-bindgen-test = "=0.3.25"
-
-[target.'cfg(not(target_family="wasm"))'.dependencies]
-pyo3 = { version = "=0.14.2", features = ["abi3-py37"] }
+[workspace]
+members = [
+        "build/rust",
+        "build/python"
+]

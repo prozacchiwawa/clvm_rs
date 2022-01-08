@@ -96,6 +96,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "clvm_rust"
+version = "0.1.16"
+dependencies = [
+ "bls12_381",
+ "hex",
+ "lazy_static",
+ "num-bigint",
+ "num-integer",
+ "num-traits",
+ "openssl",
+ "pyo3",
+ "sha2",
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+]
+
+[[package]]
 name = "console_error_panic_hook"
 version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
