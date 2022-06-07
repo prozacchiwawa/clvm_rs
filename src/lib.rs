@@ -2,7 +2,7 @@ pub mod allocator;
 pub mod chia_dialect;
 mod core_ops;
 pub mod cost;
-mod dialect;
+pub mod dialect;
 mod err_utils;
 mod gen;
 pub mod more_ops;
