@@ -1,0 +1,24 @@
+[package]
+name = "clvm_random_arguments"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "clvm_random_arguments"
+crate-type = ["rlib"]
+
+[features]
+clvmr = []
+default = ["clvmr"]
+
+[dependencies]
+sqlite = "0.30.0"
+base64 = "0.21.0"
+rand_chacha = "0.3.1"
+rand = "0.8.5"
+hex = "=0.4.3"
+
+[dependencies.clvmr]
+path = ".."
